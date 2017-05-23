@@ -1,5 +1,7 @@
 from pyfirmata import Arduino, util
 import time
+import random
+import numpy as np
 
 # initializing the arduino
 B = Arduino('/dev/cu.usbserial-DN02PAGM')
@@ -58,6 +60,14 @@ class sensor:
         
         return data
 
+# this is a class for a motor - a motor nerve control for the NN
+class motor:
+    def __init__(self, motorName, pin_number):
+        self.pin_num  = pin_number
+        self.pin = B.get_pin('d:%s:s'%self.pin_num)
+    
+    def write(self, value):
+        self.pin.write(value)
 # returns all the sensed data
 def allSensors_read():
     data = []
@@ -70,8 +80,13 @@ def allSensors_read():
 temp = sensor("temp", 0)
 light = sensor("light",1)
 dist = sensor("distance", 2)
+head = motor("head", 9)
 
-# while True:
-#     data = allSensors_read()
-#     print(data)
-#     time.sleep(0.01)
+while True:
+    data = allSensors_read()
+    print(data)
+    rand = random.random()
+    dataArr = np.array(data)
+    
+    head.write(180*rand*dataArr.mean())
+    time.sleep(0.01)
