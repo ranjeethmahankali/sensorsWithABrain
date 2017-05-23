@@ -1,8 +1,11 @@
 from pyfirmata import Arduino, util
+import time
 
 # initializing the arduino
-# B = Arduino('/dev/cu.usbserial-DN02PAGM')
+B = Arduino('/dev/cu.usbserial-DN02PAGM')
 # B = Arduino('COM3')
+it = util.Iterator(B)
+it.start()
 # the dictionary of all the sensor instances initialized till now
 SENSOR = dict()
 
@@ -10,7 +13,7 @@ SENSOR = dict()
 def pinAvailable(num):
     available = True
     for name in SENSOR:
-        if SENSOR[name] == num:
+        if SENSOR[name].pin == num:
             available = False
             break
     
@@ -31,9 +34,9 @@ class sensor:
         # this is the duration for which the sensor will collect data in a single read
         self.duration = read_duration
         # enabling reporting for this sensor
-        # B.analog[self.pin].enable_reporting()
+        B.analog[self.pin].enable_reporting()
         # adding the sensor to the dictionary of sensors
-        SENSOR[self.name] = self.pin
+        SENSOR[self.name] = self
 
     # returns a single reading from sensor
     def single_reading(self):
@@ -42,18 +45,33 @@ class sensor:
             return read
         else:
             time.sleep(0.001)
-            return getReading(num)
+            return self.single_reading()
     # reads the data from the sensor and returns it as an array
     # readings are taken for appropriate duration at appropriate frequency
     def read(self):
         interval = 1/self.frequency
-        count = self.duration//interval # using integer division for rounding off
+        count = int(self.duration//interval)+1 # using integer division for rounding off
         data = []
         for _ in range(count):
             data.append(self.single_reading())
+            time.sleep(interval)
         
         return data
 
+# returns all the sensed data
+def allSensors_read():
+    data = []
+    for name in SENSOR:
+        data += SENSOR[name].read()
+    
+    return data
+
 # this is where the main code begins - for testing
-a = sensor("temp", 0)
-b = sensor("light", 0)
+temp = sensor("temp", 0)
+light = sensor("light",1)
+dist = sensor("distance", 2)
+
+# while True:
+#     data = allSensors_read()
+#     print(data)
+#     time.sleep(0.01)
