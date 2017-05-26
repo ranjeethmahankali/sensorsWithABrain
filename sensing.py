@@ -64,7 +64,7 @@ class sensor:
 class motor:
     def __init__(self, motorName, pin_number):
         self.pin_num  = pin_number
-        self.pin = B.get_pin('d:%s:s'%self.pin_num)
+        self.pin = B.get_pin(self.pin_num)
     
     def write(self, value):
         self.pin.write(value)

@@ -6,7 +6,8 @@ temp = sense.sensor("temp", 0)
 light = sense.sensor("light",1)
 dist = sense.sensor("distance", 2)
 # sound
-head = sense.motor("head", 9)
+head = sense.motor("head", "d:9:s")
+detection_LED = sense.motor("detection_LED", "d:4:o")
 
 SENSOR_DATA_DIM = sense.data_length_all()
 HIDDEN_DIM_1 = 256

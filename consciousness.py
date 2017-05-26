@@ -45,5 +45,6 @@ with tf.Session() as sess:
         # print(hour_pred, detection_pred, head_angle, truth_val[0][:2], out[0].tolist())
         print('Time: %s, Detection: %s, Angle: %s'%(hour_pred,detection_pred,head_angle))
 
+        detection_LED.write(detection_pred)
         head.write(head_angle)
         time.sleep(0.5)
