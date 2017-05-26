@@ -14,30 +14,14 @@ batch_size = 50
 # folder to save the results in
 resDir = 'results/'
 # folder to log the training progress in
-log_dir  = 'train_log/6/'
+log_dir  = 'train_log/1/'
 
-learning_rate = 1e-4
+learning_rate = 1e-7
 # below is the coefficient for l2 loss
 alpha = 0.002
 
 model_save_path = ['savedModels/model_1.ckpt',
                     'savedModels/model_2.ckpt']
-
-# in every traning example, these will be the names of the 5 spaces
-nameList = ['red',
-            'green',
-            'yellow',
-            'white']
-# calculating the number of possible connections based on the number of spaces.
-con_num = int(len(nameList)*(len(nameList)-1)*0.5)
-# And this dictionary provides the color as RGB tuple for a space with a certian name
-colors = {
-    'red':(255,0,0),
-    'green':(0,255,0),
-    'blue':(0,0,255),
-    'yellow':(255,255,0),
-    'white':(255,255,255)
-}
 
 # this method saves the model
 def saveModel(sess, savePath):
@@ -55,13 +39,13 @@ def loadModel(sess, savedPath):
 
 # weight variable
 def weightVariable(shape, name):
-    initializer = tf.truncated_normal_initializer(mean=0.0, stddev=0.02)
+    initializer = tf.truncated_normal_initializer(mean=0.0, stddev=0.05)
     weight = tf.get_variable(name=name, shape=shape, initializer=initializer)
     return weight
 
 # bias variable
 def biasVariable(shape, name):
-    initializer = tf.constant_initializer(0.01)
+    initializer = tf.constant_initializer(0.05)
     bias = tf.get_variable(name=name, shape=shape, initializer=initializer)
     return bias
 
