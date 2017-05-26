@@ -1,9 +1,17 @@
 from ops import *
+import sensing as sense
 
-SENSOR_DATA_DIM = data_length_all()
-HIDDEN_DIM_1 = 64
-HIDDEN_DIM_2 = 256
-HIDDEN_DIM_3 = 64
+# initializing all the sensors and motors
+temp = sense.sensor("temp", 0)
+light = sense.sensor("light",1)
+dist = sense.sensor("distance", 2)
+# sound
+head = sense.motor("head", 9)
+
+SENSOR_DATA_DIM = sense.data_length_all()
+HIDDEN_DIM_1 = 256
+HIDDEN_DIM_2 = 1024
+HIDDEN_DIM_3 = 512
 OUTPUT_DIM = 3
 # it outputs two numbers, one is the hour of the day normalized
 # the second number is the probability that I am in the room
@@ -13,7 +21,7 @@ OUTPUT_DIM = 3
 NUM_HOURS = 24
 
 # these are all the variables in the model
-with tf.varialble_scope('vars'):
+with tf.variable_scope('vars'):
     wf1 = weightVariable([SENSOR_DATA_DIM, HIDDEN_DIM_1],'wf1')
     bf1 = biasVariable([HIDDEN_DIM_1], 'bf1')
     
@@ -49,12 +57,18 @@ def run_model(sensor_data, prev_inference):
     h3 = tf.nn.relu(tf.matmul(h2, wf3) + bf3)
     output = tf.nn.tanh(tf.matmul(h3, wf4) + bf4)
 
-    return [output,h3]
+    norm = (output+1)/2
+    return [norm,h3]
 
 # currently implementing root mean squared error
 def loss_optim(prediction, truth):
-    hour, detection, angle = getInterpretation(prediction)
-    # in the truth daat we ignore the angle
+    split_axis = 1
+    norm_hour, norm_detection, norm_motor = tf.split(split_axis, OUTPUT_DIM, prediction)
+
+    epsilon = 1e-6
+    hour = (norm_hour-epsilon)*NUM_HOURS
+    detection = norm_detection - epsilon
+    # in the truth data we ignore the angle
     true_hour, true_detection, _ = getInterpretation(truth)
 
     absDiff_h = tf.reduce_sum(tf.abs(hour - true_hour))
@@ -69,14 +83,14 @@ def getInterpretation(output):
     split_axis = 1
     norm_hour, norm_detection, norm_motor = tf.split(split_axis, OUTPUT_DIM, output)
 
-    epsilon = 1e-6
+    epsilon = 0
     hour = tf.floor((norm_hour-epsilon)*NUM_HOURS)
     detection = tf.floor(2*(norm_detection - epsilon))
     angle = norm_motor*180
 
     return [hour, detection, angle]
 
-def answer_accuracy(output, truth):
+def accuracy(output, truth):
     hour, detection, angle = getInterpretation(output)
     # in the truth daat we ignore the angle
     true_hour, true_detection, _ = getInterpretation(truth)
