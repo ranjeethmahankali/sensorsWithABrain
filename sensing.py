@@ -4,8 +4,8 @@ import random
 import numpy as np
 
 # initializing the arduino
-B = Arduino('/dev/cu.usbserial-DN02PAGM')
-# B = Arduino('COM3')
+# B = Arduino('/dev/cu.usbserial-DN02PAGM')
+B = Arduino('COM3')
 it = util.Iterator(B)
 it.start()
 # the dictionary of all the sensor instances initialized till now
@@ -39,6 +39,12 @@ class sensor:
         B.analog[self.pin].enable_reporting()
         # adding the sensor to the dictionary of sensors
         SENSOR[self.name] = self
+    
+    # returns the length of data in a single read for this sensor
+    def read_length(self):
+        interval = 1/self.frequency
+        count = int(self.duration//interval)+1 # using integer division for rounding off
+        return count
 
     # returns a single reading from sensor
     def single_reading(self):
@@ -51,8 +57,7 @@ class sensor:
     # reads the data from the sensor and returns it as an array
     # readings are taken for appropriate duration at appropriate frequency
     def read(self):
-        interval = 1/self.frequency
-        count = int(self.duration//interval)+1 # using integer division for rounding off
+        count = self.read_length()
         data = []
         for _ in range(count):
             data.append(self.single_reading())
@@ -76,17 +81,24 @@ def allSensors_read():
     
     return data
 
-# this is where the main code begins - for testing
-temp = sensor("temp", 0)
-light = sensor("light",1)
-dist = sensor("distance", 2)
-head = motor("head", 9)
+# returns the total length of the data from all sensors
+def data_length_all():
+    num = 0
+    for name in SENSOR:
+        num += SENSOR[name].read_length()
+    return num
 
-while True:
-    data = allSensors_read()
-    print(data)
-    rand = random.random()
-    dataArr = np.array(data)
+# this is where the main code begins - for testing
+# temp = sensor("temp", 0)
+# light = sensor("light",1)
+# dist = sensor("distance", 2)
+# head = motor("head", 9)
+
+# while True:
+#     data = allSensors_read()
+#     print(data)
+#     rand = random.random()
+#     dataArr = np.array(data)
     
-    head.write(180*rand*dataArr.mean())
-    time.sleep(0.01)
+#     head.write(180*rand*dataArr.mean())
+#     time.sleep(0.01)
