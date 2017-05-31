@@ -10,15 +10,15 @@ from PIL import Image
 # imgSize = [96,128]
 imgSize = [32,32]
 spaceSize = [32,32]
-batch_size = 50
+batch_size = 1
 # folder to save the results in
 resDir = 'results/'
 # folder to log the training progress in
 log_dir  = 'train_log/1/'
 
-learning_rate = 1e-7
+learning_rate = 1e-5
 # below is the coefficient for l2 loss
-alpha = 0.002
+alpha = 0.01
 
 model_save_path = ['savedModels/model_1.ckpt',
                     'savedModels/model_2.ckpt']
@@ -38,14 +38,14 @@ def loadModel(sess, savedPath):
     print('Loaded the model from %s'%savedPath)
 
 # weight variable
-def weightVariable(shape, name):
-    initializer = tf.truncated_normal_initializer(mean=0.0, stddev=0.05)
+def weightVariable(shape, name, mean=0.0, stddev=0.07):
+    initializer = tf.truncated_normal_initializer(mean=mean, stddev=stddev)
     weight = tf.get_variable(name=name, shape=shape, initializer=initializer)
     return weight
 
 # bias variable
-def biasVariable(shape, name):
-    initializer = tf.constant_initializer(0.05)
+def biasVariable(shape, name, val=0.01):
+    initializer = tf.constant_initializer(val)
     bias = tf.get_variable(name=name, shape=shape, initializer=initializer)
     return bias
 
@@ -68,6 +68,11 @@ def max_pool2x2x1(x):
 # this is a 2x2 max-pooling layer for 2d convolutional layers
 def max_pool2x2(x):
     return tf.nn.max_pool(x,ksize=[1,2,2,1],strides=[1,2,2,1],padding='SAME')
+
+# leaky relu activation function
+def lrelu(x):
+    out = tf.maximum(0.1*x, x)
+    return out
 
 # converts data to image
 def toImage(data):
