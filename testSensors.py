@@ -10,7 +10,7 @@ dist = sensor("distance", 2)
 maxlen = 20
 
 while True:
-    reading = sound.reading()
+    reading = vibration.reading()
     num = int(reading*maxlen)
     bar = "#"*num + (" "*(maxlen-num))
     sys.stdout.write("%.2f: %s\r"%(reading, bar))
