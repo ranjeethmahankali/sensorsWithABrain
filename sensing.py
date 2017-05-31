@@ -5,6 +5,7 @@ import numpy as np
 
 # initializing the arduino
 # B = Arduino('COM3')
+print("Connecting to the Arduino...")
 B = Arduino('/dev/cu.usbserial-DN02PAGM')
 # this is the pin used to tell the brain that I am here - the truth value
 # to train against. so set this pin to high when u r here at the DMG and working
@@ -15,7 +16,7 @@ it.start()
 # the dictionary of all the sensor instances initialized till now
 SENSOR = dict()
 
-READ_NUM = 20
+READ_NUM = 10
 READ_INTERVAL = 0.025
 
 # returns a true if the pin num is not being used by any sensor
@@ -56,7 +57,7 @@ class sensor:
             return read
         else:
             time.sleep(0.001)
-            return self.eading()
+            return self.reading()
     # reads the data from the sensor and returns it as an array
     # readings are taken for appropriate duration at appropriate frequency
 
