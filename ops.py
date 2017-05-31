@@ -10,7 +10,7 @@ from PIL import Image
 # imgSize = [96,128]
 imgSize = [32,32]
 spaceSize = [32,32]
-batch_size = 1
+batch_size = 5
 # folder to save the results in
 resDir = 'results/'
 # folder to log the training progress in
