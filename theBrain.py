@@ -5,6 +5,8 @@ import sensing as sense
 temp = sense.sensor("temp", 0)
 light = sense.sensor("light",1)
 dist = sense.sensor("distance", 2)
+sound = sense.sensor("sound", 3)
+vibration = sense.sensor("vibration", 4)
 # sound
 head = sense.motor("head", "d:9:s")
 detection_LED = sense.motor("detection_LED", "d:4:o")
@@ -62,10 +64,14 @@ def run_model(inp, cur_state):
     h1 = tf.nn.relu(tf.matmul(h0, wf1)+bf1)
     h2 = tf.nn.relu(tf.matmul(h1, wf2)+bf2)
 
-    output = tf.nn.tanh(tf.matmul(h2, wf3)+bf3)
-    output = (output+1)/2
+    output = tf.matmul(h2, wf3)+bf3
+    hour, detection, motor = tf.split(1, OUTPUT_DIM, output)
+    hour_act = (tf.nn.tanh(hour)+1)/2
+    detection_act = tf.nn.sigmoid(detection)
+    motor_act = (1+tf.sin(motor*10))/2
 
-    return [output, next_state]
+    activated = tf.concat(1, [hour_act, detection_act, motor_act])
+    return [activated, next_state]
 
 
 # currently implementing root mean squared error
@@ -94,7 +100,7 @@ def loss(output_series, truth_series):
     mean, variance = tf.nn.moments(motor_history, axes=[0])
     # print(variance.get_shape())
 
-    total_loss -= alpha * tf.reduce_mean(variance)
+    total_loss += alpha*tf.abs(0.31-tf.reduce_mean(variance))
 
     optim = tf.train.AdamOptimizer(learning_rate).minimize(total_loss)
     return [total_loss, optim]
