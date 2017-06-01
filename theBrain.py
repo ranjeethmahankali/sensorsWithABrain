@@ -68,7 +68,7 @@ def run_model(inp, cur_state):
     hour, detection, motor = tf.split(1, OUTPUT_DIM, output)
     hour_act = (tf.nn.tanh(hour)+1)/2
     detection_act = tf.nn.sigmoid(detection)
-    motor_act = (1+tf.sin(motor*10))/2
+    motor_act = (1+tf.sin(motor*2))/2
 
     activated = tf.concat(1, [hour_act, detection_act, motor_act])
     return [activated, next_state]
