@@ -100,7 +100,11 @@ def loss(output_series, truth_series):
     mean, variance = tf.nn.moments(motor_history, axes=[0])
     # print(variance.get_shape())
 
-    total_loss += alpha*tf.abs(0.31-tf.reduce_mean(variance))
+    total_loss += curiosity*tf.abs(0.31-tf.reduce_mean(variance))
+
+    w_vars = tf.trainable_variables()
+    for v in w_vars:
+        total_loss += alpha*tf.nn.l2_loss(v)
 
     optim = tf.train.AdamOptimizer(learning_rate).minimize(total_loss)
     return [total_loss, optim]
