@@ -15,7 +15,3 @@ while True:
     bar = "#"*num + (" "*(maxlen-num))
     sys.stdout.write("%.2f: %s\r"%(reading, bar))
     time.sleep(0.1)
-
-"""ddssdssdsf sdsfjkdsudhdhdds2awdqwq23ewasdasdasduuewu23ewd2311
-rte45w45srwsrrsrew5qw42343
-"""

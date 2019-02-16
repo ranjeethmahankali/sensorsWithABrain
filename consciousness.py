@@ -67,6 +67,7 @@ with tf.Session() as sess:
         updateBuffer()
         
         if i % log_step == 0: train_writer.add_summary(summary, i)
+        if i % saveStep == 0: saveModel(sess, model_save_path[0])
 
         # print(hour_pred, detection_pred, head_angle, truth_val[0][:2], out[0].tolist())
         print('Time: %s, Detection: %s, Angle: %s'%(hour_pred,detection_pred,head_angle))
