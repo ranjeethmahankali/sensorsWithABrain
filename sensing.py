@@ -4,9 +4,9 @@ import random
 import numpy as np
 
 # initializing the arduino
-# B = Arduino('COM3')
 print("Connecting to the Arduino...")
-B = Arduino('/dev/cu.usbserial-DN02PAGM')
+B = Arduino('COM3')
+# B = Arduino('/dev/cu.usbserial-DN02PAGM')
 # this is the pin used to tell the brain that I am here - the truth value
 # to train against. so set this pin to high when u r here at the DMG and working
 IAM_HERE_PIN = B.get_pin('d:2:i')
